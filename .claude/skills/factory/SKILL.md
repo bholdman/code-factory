@@ -15,7 +15,7 @@ The first word is the mode and the rest are its arguments. Read `.claude/command
 |---|---|---|
 | `setup` | `/factory:setup` | Prepares a repo: finds and verifies its commands, writes CLAUDE.md settings, creates labels, checks the board |
 | `plan` | `/factory:plan <issues>` | Plans each issue, creates its branch, commits and pushes the plan |
-| `design` | `/factory:design <issue> [--options N] [--choose X]` | Creates design options in Claude Design, links them from the plan, snapshots the pick |
+| `design` | `/factory:design <issue> [--options N] [--choose X]` | Creates design options as a Design artifact, links them from the plan, snapshots the pick |
 | `build` | `/factory:build <issue>` | Checks out the plan's branch, builds with review agents, opens a PR |
 | `status` | `/factory:status` | Lists factory issues by stage |
 | `pr-audit` | `/factory:pr-audit <pr>` | Read-only review of any PR, posted as one comment review |

@@ -12,7 +12,7 @@ Work inside the worktree path you're given, on the branch that already holds the
 ## First build
 
 1. Read `CLAUDE.md` for conventions, project rules, and the "Commands the factory runs" section. Read the plan file and any human notes you were given. Install dependencies if the session hasn't already.
-2. If the plan has a chosen design, open its snapshot in `plans/<n>-<slug>-design/` (HTML, screenshots and README). Build the screens to match it, using the app's existing components and styles. Where the design and the app's design system disagree, follow the design system and list the difference under deviations.
+2. If the plan has a chosen design, open its snapshot in `plans/<n>-<slug>-design/` (the design's files, any screenshots, and README). Build the screens to match it, using the app's existing components and styles. Where the design and the app's design system disagree, follow the design system and list the difference under deviations.
 3. For each acceptance criterion, in plan order:
    1. Write the test the plan names.
    2. Run it and watch it fail for the right reason, meaning the assertion about this behavior, not a typo or a missing import. A test you haven't seen fail proves nothing.

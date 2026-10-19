@@ -63,6 +63,7 @@ Draft both sections in the format of `claude-md-snippet.md`, filled in:
 - Factory plan dir: plans
 - Factory plan file: <detected pattern, else {number}-{slug}.md>
 - Factory reviewers: <ask; leave out if none>
+- Factory design system: <ask: a claude.ai design system link, or which of the app's own components and styles designs must match>
 - MAX_INLINE: <the team's existing value, else 15>
 - APP_GLOBS / TEST_GLOBS / MIGRATION_GLOBS / FRONTEND_GLOBS: <the team's existing globs, else inferred from the layout>
 ```
@@ -80,8 +81,8 @@ Report each item as done, fixed, or needs a human. Fix only what's marked as you
 | Base branch protected | `gh api repos/$REPO/rulesets` and `gh api repos/$REPO/branches/$BASE_BRANCH/protection` (a 404 means none) | Needs a human: a ruleset that requires a PR and blocks force pushes and deletion. Give them the link `https://github.com/$REPO/settings/rules` |
 | Board workflow configured | `.github/workflows/factory-board.yml` still has `PROJECT_NUMBER: "1"` and the default column names | Fill it in (below) |
 | Board token | `gh api repos/$REPO/actions/secrets -q '.secrets[].name'` includes `FACTORY_PROJECT_TOKEN` (a 403 means you can't see secrets; say so) | Needs a human: create the token and the secret, as the factory's README describes. Never ask for or handle the token yourself |
+| Design tool | the Artifact tool offers a Design type (`quickstart` with intent `design`) | Note it. Without it, `/factory:design` prints the brief for a human to make the design in Claude and paste the link back. Optional: run `/design-sync` once so designs start from the repo's own components |
 | Plans folder | the plan dir exists | Note it; `/factory:plan` creates files there |
-| Claude Design | the `claude-design` MCP tools are available in this session | Needs a human, and only if they want design options: `claude mcp add --scope user --transport http claude-design https://api.anthropic.com/v1/design/mcp`, then `/design-sync` once so designs start from the repo's own components |
 
 **Creating labels** (REST, so it works in cloud sessions):
 

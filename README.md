@@ -22,7 +22,7 @@ Drop this into a repo, commit it, and the `/factory:*` commands work in every Cl
 |---|---|
 | `/factory:setup [--check]` | Prepares the repo: finds and runs its commands, writes the CLAUDE.md sections, creates labels, configures the board workflow, and checks main-branch protection |
 | `/factory:plan <issues> [--batch] [--design N \| --no-design]` | Plans each issue, creates its branch, commits and pushes the plan, links it from the issue |
-| `/factory:design <issue> [--options N] [--choose X]` | Creates design options in Claude Design for UI work, links them from the plan, and snapshots the one you pick onto the branch |
+| `/factory:design <issue> [--options N] [--choose X]` | Creates design options for UI work as a Design artifact, links them from the plan, and snapshots the one you pick onto the branch |
 | `/factory:build <issue>` | Builds from the plan branch with review agents, opens the PR |
 | `/factory:pr-audit <pr>` | Read-only review of any PR against the rulebook, posted as one COMMENT review; on factory PRs it also checks the plan and evidence |
 | `/factory:status` | Lists factory issues by stage |
@@ -38,24 +38,18 @@ Every command runs only when you type it at the start of a message; Claude can't
 
 To change a plan after it's pushed, edit the plan file on the branch. Answers and notes you leave as issue comments are read by `/factory:build` as clarifications; if one contradicts the plan, the build stops and asks rather than guessing.
 
-## Design with Claude Design
+## Design options
 
 When a plan changes screens a user sees, `/factory:plan` asks whether to include design and how many options you want (1–4, default 3). In batch mode, pass `--design 3` or `--no-design`, or decide later with `/factory:design <issue>`.
 
 1. The factory writes a design brief from the issue: the screens, their empty, loading, error and success states, real content, and N directions that differ in layout or flow, not just color.
-2. It creates a Claude Design project for the issue with one option per direction, and links the project and each option from the plan's `### Design` section and the issue.
-3. You pick one, in the session or with `/factory:design <issue> --choose B`. The factory copies the chosen option onto the branch at `plans/<n>-<slug>-design/`, so a cloud build that can't open Claude Design still has it.
+2. It draws the options on one Design artifact in Claude, one labelled group of artboards per direction, and links it from the plan's `### Design` section and the issue. Artifacts start private, so share the canvas with your team.
+3. You pick one, in the session or with `/factory:design <issue> --choose B`. The factory copies the chosen option onto the branch at `plans/<n>-<slug>-design/`, so the builder and a cloud build that can't open claude.ai still have it.
 4. The builder builds to that snapshot, and the UI reviewer compares the result against it.
 
 An issue stays `factory:planned` until a design is picked, and `/factory:build` stops and asks if the design is still open.
 
-Creating designs from a session needs the Claude Design MCP server, connected once on your machine:
-
-```bash
-claude mcp add --scope user --transport http claude-design https://api.anthropic.com/v1/design/mcp
-```
-
-Then run `/design-sync` once per repo, so designs start from the repo's real components. Without the server (common in cloud sessions), the factory prints the brief and a `/design …` command to run in Claude Code Desktop or the terminal, and you paste the project link back.
+Set `Factory design system:` in CLAUDE.md to say what designs should look like: a claude.ai design system link, or the app's own components and styles to match. Optionally, run `/design-sync` once to load the repo's components into a design system. A session without the Design artifact type uses Claude Design tools if it has them; otherwise it prints the brief for you to make the design in Claude and paste the link back.
 
 ## What's in here
 
