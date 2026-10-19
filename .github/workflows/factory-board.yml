@@ -1,0 +1,65 @@
+# Moves an issue's card on the GitHub Project board whenever a factory stage label is added.
+# The factory commands only change labels (REST works everywhere, including cloud sessions);
+# this workflow does the board move, because GitHub Projects can only be changed through GraphQL,
+# which Claude Code cloud sessions can't reach.
+name: factory-board
+
+on:
+  issues:
+    types: [labeled]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: factory-board-${{ github.event.issue.number }}
+  cancel-in-progress: false
+
+jobs:
+  move-card:
+    if: startsWith(github.event.label.name, 'factory:')
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.FACTORY_PROJECT_TOKEN }}
+      # --- Edit these to match your board -------------------------------------
+      PROJECT_OWNER: your-org          # org (or user) that owns the board
+      PROJECT_NUMBER: "1"              # the number in the board URL: .../projects/<number>
+      STATUS_FIELD: Status             # the single-select field your columns come from
+      COL_PLANNED: Planned             # leave a column blank to skip moving for that label
+      COL_READY: Ready
+      COL_BUILDING: In Progress
+      COL_IN_REVIEW: In Review
+      COL_NEEDS_HUMAN: Blocked
+      # -------------------------------------------------------------------------
+      LABEL: ${{ github.event.label.name }}
+      ISSUE_URL: ${{ github.event.issue.html_url }}
+    steps:
+      - name: Move the card to the label's column
+        run: |
+          set -euo pipefail
+          case "$LABEL" in
+            factory:planned)     COLUMN="$COL_PLANNED" ;;
+            factory:ready)       COLUMN="$COL_READY" ;;
+            factory:building)    COLUMN="$COL_BUILDING" ;;
+            factory:in-review)   COLUMN="$COL_IN_REVIEW" ;;
+            factory:needs-human) COLUMN="$COL_NEEDS_HUMAN" ;;
+            *) echo "No column mapped for $LABEL"; exit 0 ;;
+          esac
+          if [ -z "$COLUMN" ]; then echo "Column for $LABEL is blank; skipping"; exit 0; fi
+
+          PROJECT_ID=$(gh project view "$PROJECT_NUMBER" --owner "$PROJECT_OWNER" --format json --jq .id)
+          FIELDS=$(gh project field-list "$PROJECT_NUMBER" --owner "$PROJECT_OWNER" --format json --limit 100)
+          FIELD_ID=$(jq -r --arg f "$STATUS_FIELD" '.fields[] | select(.name==$f) | .id' <<<"$FIELDS")
+          OPTION_ID=$(jq -r --arg f "$STATUS_FIELD" --arg c "$COLUMN" \
+            '.fields[] | select(.name==$f) | .options[]? | select(.name==$c) | .id' <<<"$FIELDS")
+          if [ -z "$FIELD_ID" ] || [ -z "$OPTION_ID" ]; then
+            echo "::error::Board has no '$COLUMN' option in field '$STATUS_FIELD'. Fix the COL_* names in this workflow."
+            exit 1
+          fi
+
+          # Adds the issue to the board if it isn't there yet; returns the existing card if it is.
+          ITEM_ID=$(gh project item-add "$PROJECT_NUMBER" --owner "$PROJECT_OWNER" --url "$ISSUE_URL" --format json --jq .id)
+
+          gh project item-edit --id "$ITEM_ID" --project-id "$PROJECT_ID" \
+            --field-id "$FIELD_ID" --single-select-option-id "$OPTION_ID"
+          echo "Moved $ISSUE_URL to '$COLUMN'"
