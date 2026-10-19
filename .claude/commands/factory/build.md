@@ -20,11 +20,12 @@ You are the orchestrator. You read the issue, launch the factory subagents, writ
 4. Read the plan file on the branch. This is the plan, exactly as it reads now; humans edit it before approving, and their edits win.
 5. Collect human notes: comments on the issue posted after that plan comment that don't start with a factory heading. Treat them as clarifications. If one contradicts the plan, or reopens a decision the plan made, escalate (section 5) rather than guess which wins.
 6. If the plan still lists open questions that no note answers, escalate.
-7. Move the issue to `factory:building`, removing `factory:ready`.
+7. **Design.** If the plan's `### Design` status is "waiting for a pick", "waiting for designs" or "not decided" on a plan that `Needs design`, escalate and ask the human to run `/factory:design <n>`. If an option was chosen, confirm its snapshot folder (`plans/<n>-<slug>-design/`) is on the branch. If the snapshot is missing, escalate rather than build from the text.
+8. Move the issue to `factory:building`, removing `factory:ready`.
 
 ## 2. Build
 
-Launch `factory-builder` with the issue, the plan file path, the human notes, the CLAUDE.md commands, the worktree path, and the branch name. It returns DONE or BLOCKED. On BLOCKED, escalate with its question.
+Launch `factory-builder` with the issue, the plan file path, the design snapshot path (if any), the human notes, the CLAUDE.md commands, the worktree path, and the branch name. It returns DONE or BLOCKED. On BLOCKED, escalate with its question.
 
 ## 3. Review rounds (at most 3)
 

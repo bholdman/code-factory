@@ -15,6 +15,7 @@ The branch carries the plan and the code together. The issue carries the convers
 
 - **Branch:** `factory/<n>-<slug>`, where `<slug>` is 3–5 kebab-case words describing the work, such as `factory/41-csv-invoice-export`. If CLAUDE.md sets `Factory branch:` (for example `{number}-{slug}`), use that format instead.
 - **Plan file:** `plans/<n>-<slug>.md` in the repo's root `plans/` folder on that branch. CLAUDE.md can change the folder with `Factory plan dir:` and the file name with `Factory plan file:` (for example `{number}-{slug}.md`). It stays in the PR and merges with the code, so the plan is kept next to the change it explains.
+- **Design snapshot:** when the plan includes design, `/factory:design` links the Claude Design options from the plan's `### Design` section, and copies the chosen option into `plans/<n>-<slug>-design/` on the branch. Build works from that copy, because cloud sessions may not be able to open Claude Design.
 - **The plan file is the plan.** Humans change it by editing the file on the branch. Comments on the issue that don't start with a factory heading are human notes: `/factory:build` reads them as clarifications and escalates if one contradicts the plan.
 
 ## Stage labels
@@ -106,7 +107,7 @@ Run only the reviewers a change needs. That saves time and usage and keeps the s
 - `factory-reviewer-ux` and `factory-reviewer-ui`: any frontend change, meaning components, views, templates, styles, client-side scripts, or user-facing copy.
 - When unsure whether a reviewer applies, include it.
 
-Give each reviewer the issue, the plan file path, the worktree path, `$BASE`, the round number, the CLAUDE.md commands, and the previous round's findings for its area. Run them in parallel. The plan file isn't code; reviewers skip it.
+Give each reviewer the issue, the plan file path, the worktree path, `$BASE`, the round number, the CLAUDE.md commands, and the previous round's findings for its area. Run them in parallel. The plan file and the design snapshot aren't code; reviewers skip them, except that the UI reviewer compares the built screens to the snapshot.
 
 ## Shared references
 

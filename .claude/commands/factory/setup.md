@@ -81,6 +81,7 @@ Report each item as done, fixed, or needs a human. Fix only what's marked as you
 | Board workflow configured | `.github/workflows/factory-board.yml` still has `PROJECT_NUMBER: "1"` and the default column names | Fill it in (below) |
 | Board token | `gh api repos/$REPO/actions/secrets -q '.secrets[].name'` includes `FACTORY_PROJECT_TOKEN` (a 403 means you can't see secrets; say so) | Needs a human: create the token and the secret, as the factory's README describes. Never ask for or handle the token yourself |
 | Plans folder | the plan dir exists | Note it; `/factory:plan` creates files there |
+| Claude Design | the `claude-design` MCP tools are available in this session | Needs a human, and only if they want design options: `claude mcp add --scope user --transport http claude-design https://api.anthropic.com/v1/design/mcp`, then `/design-sync` once so designs start from the repo's own components |
 
 **Creating labels** (REST, so it works in cloud sessions):
 

@@ -23,7 +23,8 @@ A human reads and approves every plan before code is written, so write for that 
 5. **Fence the scope.** List the files you expect to change. The builder treats anything outside that list as needing a reason.
 6. **Pick a test for every criterion.** Name the test file and case (new or existing), the level (unit, integration, system, browser), and what it asserts. Every criterion maps to at least one step and one test, because that mapping is what the reviewers and the approver check later.
 7. **List open questions.** Put product decisions you can't settle from the issue or the code here. Don't guess at them.
-8. **Suggest a branch slug:** 3–5 kebab-case words describing the work, such as `csv-invoice-export`.
+8. **Flag design work.** Set `Needs design: yes` when the change adds or reworks screens a user sees, and list those screens and states. Copy changes and small tweaks to an existing screen are usually no.
+9. **Suggest a branch slug:** 3–5 kebab-case words describing the work, such as `csv-invoice-export`.
 
 ## Plan template
 
@@ -54,6 +55,12 @@ A human reads and approves every plan before code is written, so write for that 
 
 ### Expected reviewers
 security: yes/no — <why> · ux: yes/no · ui: yes/no
+
+**Needs design:** yes — <screens and states> | no
+
+### Design
+**Status:** not decided
+<!-- /factory:design fills this in with Claude Design links, then the chosen option and its snapshot -->
 
 ### Open questions
 - [ ] <question for a human> (write "None" if there are none)

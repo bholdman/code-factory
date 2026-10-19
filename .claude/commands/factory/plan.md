@@ -1,6 +1,6 @@
 ---
 description: Factory — plan GitHub issues, create each issue's branch, commit the plan to it and push, then link it from the issue for approval
-argument-hint: <issue> [issue...] [--batch]
+argument-hint: <issue> [issue...] [--batch] [--design N | --no-design]
 disable-model-invocation: true
 ---
 
@@ -10,12 +10,14 @@ Arguments: `$ARGUMENTS` (none → ask which issues to plan)
 
 Read `.claude/factory/conventions.md` first. It defines the branch and plan-file rules, labels, comment headings, REST-only GitHub calls and hard limits this command relies on.
 
-Planning is cheap compared to building, and a human reads every plan, so aim for clear and specific over long. Don't write code here; the only file this command commits is the plan.
+Planning is cheap compared to building, and a human reads every plan, so aim for clear and specific over long. Don't write code here. This command commits only the plan file, and the design snapshot when a design is picked.
 
 ## Mode
 
 - **With you (default for one issue):** one issue number and no `--batch`. You answer the plan's open questions in the session and can approve it on the spot.
 - **Batch:** several issues, or `--batch`. No stops. Open questions stay in each plan for the human to answer on the issue. Use this for unattended cloud runs.
+
+Design flags: `--design N` includes design with N options for every issue whose plan changes the UI, and `--no-design` skips design. Without either, you ask in with-you mode, and in batch mode the plan notes that design hasn't been decided.
 
 ## 1. Fetch
 
@@ -33,6 +35,8 @@ Show the human, in about 15 lines or fewer: the size, the approach, the scope fe
 
 Don't plan around unanswered product questions. If the human would rather answer later, keep the questions in the plan and continue.
 
+**Design.** If the plan's `Needs design` line is yes (it changes screens a user sees), ask before the approval question: "This changes <screens>. Include design? How many options? (1–4, default 3)". Hold the answer until the branch exists, then run step 4a.
+
 ## 4. Branch, commit, push
 
 For each plan, one issue at a time:
@@ -42,6 +46,14 @@ For each plan, one issue at a time:
 3. Write the plan to the plan file (`plans/<n>-<slug>.md` by default, or the `Factory plan dir:` and `Factory plan file:` from CLAUDE.md). On a re-plan, overwrite the file; git history keeps the old version.
 4. Commit only that file: `docs(#<n>): factory plan — <issue title>` (re-plan: `docs(#<n>): revise factory plan`).
 5. Push: `git -C <worktree> push -u origin <branch>`. Then remove the worktree.
+
+## 4a. Design (when included)
+
+For each plan where design is included, follow `.claude/commands/factory/design.md` steps 3–5 on its branch: write the brief, create the options in Claude Design, and link them from the plan's `### Design` section. In with-you mode, show the options and ask the human to pick one now or later; on a pick, run that file's step 6.
+
+In batch mode without `--design`, set the plan's design status to "not decided" and add an open question: "Include design for <screens>? Run `/factory:design <n>`."
+
+An issue whose design is still waiting for a pick stays `factory:planned`, even if the human approves the rest of the plan.
 
 ## 5. Link it from the issue
 
@@ -53,6 +65,7 @@ Post a `## Factory plan` comment on the issue:
 **Plan:** [<plan file path>](https://github.com/<REPO>/blob/<branch>/<plan file path>)
 **Branch:** `<branch>`
 **Size:** <size> · **Expected reviewers:** <list>
+**Design:** <options with links, the chosen option, "skipped", or "not decided">
 
 <the plan's summary>
 

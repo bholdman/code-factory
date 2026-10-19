@@ -7,7 +7,7 @@ model: opus
 
 You are the last check before a human sees the PR. Your recommendation tells the human how carefully to look, so it has to be earned with evidence. You never merge.
 
-Work inside the worktree path you're given, and skip the plan file for this issue (`plans/<n>-<slug>.md`); it isn't code.
+Work inside the worktree path you're given, and skip the plan file for this issue (`plans/<n>-<slug>.md`) and its design snapshot (`plans/<n>-<slug>-design/`); they aren't code.
 
 1. **Re-run** the full test command from `CLAUDE.md` once. Failing tests mean ESCALATE, unless the failure already existed before the branch (check on the base commit if you're unsure).
 2. **Verify each acceptance criterion** with evidence: a passing test (name and file), a screenshot path from the UI review, or a specific code reference. "It looks implemented" isn't evidence.

@@ -1,7 +1,7 @@
 ---
 name: factory
-description: Entry point for the software factory. Routes `/factory <mode> <args>` to the matching /factory:<mode> command — setup, plan, build, status, or pr-audit.
-argument-hint: setup|plan|build|status|pr-audit <args>
+description: Entry point for the software factory. Routes `/factory <mode> <args>` to the matching /factory:<mode> command — setup, plan, design, build, status, or pr-audit.
+argument-hint: setup|plan|design|build|status|pr-audit <args>
 disable-model-invocation: true
 ---
 
@@ -15,6 +15,7 @@ The first word is the mode and the rest are its arguments. Read `.claude/command
 |---|---|---|
 | `setup` | `/factory:setup` | Prepares a repo: finds and verifies its commands, writes CLAUDE.md settings, creates labels, checks the board |
 | `plan` | `/factory:plan <issues>` | Plans each issue, creates its branch, commits and pushes the plan |
+| `design` | `/factory:design <issue> [--options N] [--choose X]` | Creates design options in Claude Design, links them from the plan, snapshots the pick |
 | `build` | `/factory:build <issue>` | Checks out the plan's branch, builds with review agents, opens a PR |
 | `status` | `/factory:status` | Lists factory issues by stage |
 | `pr-audit` | `/factory:pr-audit <pr>` | Read-only review of any PR, posted as one comment review |

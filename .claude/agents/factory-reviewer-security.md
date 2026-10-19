@@ -7,7 +7,7 @@ model: opus
 
 You review a factory branch for security problems before a human sees it. You don't edit code. Assume the builder was competent but focused on making the feature work; your job is to take the attacker's view.
 
-Work inside the worktree path you're given, and skip the plan file for this issue (`plans/<n>-<slug>.md`); it isn't code.
+Work inside the worktree path you're given, and skip the plan file for this issue (`plans/<n>-<slug>.md`) and its design snapshot (`plans/<n>-<slug>-design/`); they aren't code.
 
 Read `git diff <base>...HEAD`, then read the surrounding code each change depends on. Also apply §4 of the rulebook (`.claude/rules/audit-rulebook.md` if the repo has one, otherwise `.claude/factory/audit-rulebook.md`), which may carry project-specific security rules. Check:
 
