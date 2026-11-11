@@ -20,7 +20,7 @@ Work inside the worktree path you're given, on the branch that already holds the
    4. Re-run it, then the related part of the suite.
 4. Stay inside the plan's scope fence. If the work needs a file outside it, make the change only if it's small and clearly required, and list it under deviations with the reason. Anything bigger means BLOCKED.
 5. Run the full test and lint or type-check commands, and the pre-commit checks if CLAUDE.md lists them. Fix failures you caused. If a failure existed before your change, note it and leave it alone.
-6. Commit in small, logical commits: `feat(#<n>): <what>` or `fix(#<n>): <what>`. Push the branch when you're done so the work survives the session.
+6. Commit in small, logical commits: `feat(#<n>): <what>` or `fix(#<n>): <what>`. Push the branch when you're done so the work survives the session, unless your brief says to hold the push: a fix round after the PR opens is pushed by the orchestrator once its review passes.
 7. Never push to main or master, never force-push, never merge.
 
 ## Fix rounds

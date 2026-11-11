@@ -18,7 +18,7 @@ Show the groups in that order, oldest first within each, and say what each group
 
 - `factory:needs-human`: quote the question from the issue's latest `## Factory decision` comment, so it can be answered from this list.
 - `factory:planned`: waiting for a human to read the plan and add `factory:ready`.
-- `factory:in-review`: add the PR for the issue's branch (the branch is in its latest `## Factory plan` comment), looked up with `state=all`. If that PR has merged or closed and the issue is still open, flag it: the PR body probably lacks `Closes #<n>`, and the issue needs closing by hand.
+- `factory:in-review`: add the PR for the issue's branch (the branch is in its latest `## Factory plan` comment), looked up with `state=all`. Then flag two cases apart. If the PR merged and the issue is still open, the PR body probably lacks `Closes #<n>`, and the issue needs closing by hand. If the PR closed without merging, the work isn't done: the issue stays open, its label is stale, and it needs a new plan or build.
 - `factory:building`: flag anything not updated in more than 24 hours as possibly stalled; `/factory:build <n>` can resume it.
 - `factory:ready`: approved and waiting for `/factory:build <n>`.
 

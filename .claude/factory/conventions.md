@@ -113,6 +113,8 @@ git worktree add /tmp/factory-<n>/wt -b <branch> origin/$BASE_BRANCH
 git worktree add /tmp/factory-<n>/wt -B <branch> origin/<branch>
 ```
 
+If `/tmp/factory-<n>/wt` already exists, an earlier command in this checkout kept it. Reuse it; don't add it again, and never reset it, because it may hold commits or files that weren't pushed. Look at `git -C /tmp/factory-<n>/wt status`, fetch, and bring in anything `origin/<branch>` has that the worktree lacks with a merge (`git -C /tmp/factory-<n>/wt merge origin/<branch>`).
+
 Work, commit and push from inside the worktree (`git -C /tmp/factory-<n>/wt push -u origin <branch>`). Record the diff base with `BASE=$(git -C /tmp/factory-<n>/wt merge-base HEAD origin/$BASE_BRANCH)`.
 
 Before running anything in a new worktree:
@@ -129,7 +131,7 @@ Keep the worktree until the work on the branch is over, then remove it with `git
 - Launch them in the background and tell the human in one line what is running, so they can follow along and interject.
 - Brief each one completely; it knows only what the brief says. Give it paths, not pasted contents.
 - Check what comes back before building on it: the commits exist, nothing is left uncommitted, and the test log shows what the report claims.
-- Push the branch after every stage that adds commits. A cloud container can restart in the middle of a build.
+- Push the branch after every stage that adds commits. A cloud container can restart in the middle of a build. The exception is a fix round after the PR opens: it is pushed once its review passes, so the open PR never holds an unreviewed commit.
 - If a subagent is interrupted, look at the worktree before relaunching, and tell the new one what was left behind.
 - Each agent ends its commits with the attribution its own session gives it. A trailer that differs from the orchestrator's isn't an error.
 

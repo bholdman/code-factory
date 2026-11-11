@@ -16,7 +16,7 @@ You are the orchestrator. You read the issue, launch the factory subagents, writ
 
 1. Read the issue and its comments, and check its stage label:
    - `factory:ready`: carry on. That label is the human's approval.
-   - `factory:building`: an earlier build was interrupted, or one is still running in another session. With a person in the session, ask whether to resume it. Unattended, resume only if the issue hasn't been updated for 24 hours; otherwise stop and say so. To resume, do steps 2–7, then look at the branch. With no build commits yet, start at section 2 and tell the builder about any uncommitted files in the worktree. With build commits that no `## Factory review` comment covers, start at section 3.
+   - `factory:building`: an earlier build was interrupted, or one is still running in another session. With a person in the session, ask whether to resume it. Unattended, resume only if the issue hasn't been updated for 24 hours; otherwise stop and say so. To resume, do steps 2–7, then find where it stopped. Commits on the branch don't show the builder finished: it commits in small steps, so an interruption can leave some criteria unbuilt. Unless a `## Factory review` comment already covers the branch's current head, start at section 2: tell the builder which commits and uncommitted files are already there, and have it finish the plan and run the full checks rather than start over. If a review comment does cover the current head, carry on from that round's outcome in section 3.
    - `factory:in-review` with an open PR for the branch: do steps 2–4, then go to section 6.
    - Anything else: stop and tell the user. Building without the human's approval breaks the process.
 2. Find the most recent `## Factory plan` comment and take the branch from it. No plan comment, or the branch doesn't exist on `origin` → stop and suggest `/factory:plan <n>`.
@@ -80,15 +80,17 @@ If the session can receive PR events, subscribe to the PR and keep the worktree.
 For each finding or request on the PR:
 
 1. **Check it's real.** Trace a path to the failure in the code. A bot's finding is a claim, not an order. If it doesn't hold, or the fix costs more than it prevents, reply on its thread with what you traced and leave the code alone.
-2. **Fix it through the builder.** Send what holds to `factory-builder` as a fix round: a failing test first, then the fix. The orchestrator doesn't write the code, however small the change.
-3. **Review the change.** Run `factory-reviewer-code` on `git diff <head before the fix>...HEAD`, plus any other reviewer whose area the fix touches. CHANGES goes back to the builder, with the same three-round limit.
+2. **Fix it through the builder.** Send what holds to `factory-builder` as a fix round: a failing test first, then the fix. Tell it to commit and not push. The orchestrator doesn't write the code, however small the change.
+3. **Review the change, then push.** Run `factory-reviewer-code` on `git diff <head before the fix>...HEAD`, plus any other reviewer whose area the fix touches. CHANGES goes back to the builder, with the same three-round limit. Push only when every reviewer passes, so the open PR never holds a commit no factory reviewer has seen.
 4. **Record it.** Post `## Factory review — after PR, round N` on the issue. Update the PR body wherever it is no longer true (reviews, criteria evidence, deviations, human steps). Reply on the finding's thread with the commit.
 
 A human reviewer's request that reverses a decision in the plan is theirs to make. Do it the same way, and record it in the plan file under `### Changes after approval` and under the PR body's deviations, so the plan that merges matches the code.
 
 **CI.** A failed or cancelled check is work, not something to wait out. Find out whether the diff caused it. If it didn't (the same step fails on other branches, or it fails before the code is checked out), say so once on the PR with the evidence, and don't re-run it blindly.
 
-**When the PR merges or closes:** remove `factory:in-review` from the issue, and check the issue closed. A merged PR whose issue is still open usually lacks `Closes #<n>`; tell the human. Then remove the worktree and report.
+**When the PR merges:** remove `factory:in-review` from the issue, and check the issue closed. A merged PR whose issue is still open usually lacks `Closes #<n>`; tell the human. Then remove the worktree and report.
+
+**When the PR closes without merging:** the issue's work isn't done, so leave the issue open. Remove `factory:in-review`, remove the worktree, and tell the human the issue needs a new plan or build, or closing, as they decide.
 
 ## 7. Report
 

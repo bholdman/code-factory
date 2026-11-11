@@ -53,7 +53,7 @@ For each plan, one issue at a time:
 
 ## 4a. Design (when included)
 
-For each plan where design is included, follow `.claude/commands/factory/design.md` steps 3–5 on its branch: write the brief, create the options, and link them from the plan's `### Design` section. In with-you mode, show the options and ask with the popup which one to build, one choice per option plus "Pick later"; on a pick, run that file's step 6.
+For each plan where design is included, follow `.claude/commands/factory/design.md` steps 3–5 on its branch: write the brief, create the options, and link them from the plan's `### Design` section. In with-you mode, show the options and ask with the popup which one to build, one choice per option plus "Pick later" (with four options, leave "Pick later" out, as design.md step 6 describes); on a pick, run that file's step 6.
 
 In batch mode without `--design`, set the plan's design status to "not decided" and add an open question: "Include design for <screens>? Run `/factory:design <n>`."
 

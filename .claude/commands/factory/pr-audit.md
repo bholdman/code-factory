@@ -37,7 +37,7 @@ Read the rulebook first; never audit from memory. Check changed application file
 
 Factory PRs get three more checks:
 
-- **Plan conformance:** every plan step shows up in the diff, changes outside the plan's scope fence are findings (Medium, unless trivial), and the plan file wasn't edited by the build.
+- **Plan conformance:** every plan step shows up in the diff, changes outside the plan's scope fence are findings (Medium, unless trivial), and the plan file wasn't edited by the build. The one allowed edit is a `### Changes after approval` section, where each entry records a decision a human made later; check each against the issue's `## Factory decision` comments or the PR's review comments, and treat an entry with no such record as a finding.
 - **Evidence:** for each acceptance criterion the PR body claims, confirm the named test exists and actually asserts that criterion. A claim the code doesn't back is High.
 - **Review history:** blocker and major findings from the factory review rounds are resolved or explained.
 - **Unreviewed commits:** list the commits pushed after the newest `## Factory review` comment on the issue. No factory reviewer saw them, so read them with the most care and name them in the summary.

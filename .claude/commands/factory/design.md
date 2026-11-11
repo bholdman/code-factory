@@ -75,7 +75,7 @@ The issue stays `factory:planned` until a design is chosen. Don't add `factory:r
 
 ## 6. Record the pick (`--choose <option>`, or the human answers in the session)
 
-With a person in the session and no `--choose`, ask with the popup which option to build: one choice per option, named by its direction, plus "Pick later".
+With a person in the session and no `--choose`, ask with the popup which option to build: one choice per option, named by its direction. The popup takes at most four choices: with three options or fewer add "Pick later" as a choice, and with four leave it out, since the person can still defer under "Other".
 
 1. Set `Status: chosen: <option>` and `Chosen: <option>` in the plan file.
 2. **Snapshot the chosen option onto the branch.** The builder and reviewers can't open claude.ai, and the build may run in a cloud session, so they need a copy.
