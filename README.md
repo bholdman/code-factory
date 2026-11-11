@@ -4,6 +4,9 @@ A set of Claude Code commands, subagents and hooks that turn GitHub issues into 
 
 Drop this into a repo, commit it, and the `/factory:*` commands work in every Claude Code session on that repo: local, cloud, Desktop app, or phone.
 
+- New to it: [Add it to a repo](#1-add-it-to-a-repo-20-min).
+- Already using it: [Updating a repo that already has the factory](#updating-a-repo-that-already-has-the-factory).
+
 ## Requirements
 
 - Claude Code with access to cloud sessions (Claude Code on the web), and the Claude GitHub app installed on the repo
@@ -76,6 +79,8 @@ Set `Factory design system:` in CLAUDE.md to say what designs should look like: 
     factory-approver.md            opus
   hooks/factory-guard.sh           blocks merges, force pushes, pushes to main, branch deletion
   settings.json                    registers the guard hook
+scripts/factory-install.sh         installs the factory into a repo, or updates one that has it
+scripts/test-factory-install.sh    tests the installer against throwaway repos
 scripts/factory-labels.sh          creates the stage labels
 claude-md-snippet.md               sections to add to the repo's CLAUDE.md
 ```
@@ -107,7 +112,23 @@ The commands don't move cards themselves. GitHub Projects can only be changed th
 
 ## 1. Add it to a repo (20 min)
 
-1. Copy the `.claude/` and `.github/` folders into the repo root, merging with any that already exist. Don't copy this README over the repo's own. If the repo already has `.claude/settings.json`, keep it; setup merges the hook in.
+1. Clone this repo next to yours and run the installer, pointing it at your repo's root:
+
+   ```bash
+   git clone https://github.com/bholdman/code-factory
+   ```
+
+   ```bash
+   code-factory/scripts/factory-install.sh --check path/to/your-repo
+   ```
+
+   ```bash
+   code-factory/scripts/factory-install.sh path/to/your-repo
+   ```
+
+   The `--check` run lists what would be added and changes nothing. The install copies the factory's commands, agents, reference files, skill and guard hook into `.claude/`. It adds `.claude/settings.json` and `.github/workflows/factory-board.yml` only if the repo doesn't have them yet; an existing `settings.json` is left as it is, and setup merges the hook in. It doesn't touch your README, CLAUDE.md or anything else, so it is safe in a repo that already has its own `.claude/` folder.
+
+   Without a shell, copy the `.claude/` and `.github/` folders into the repo root by hand, merging with any that already exist.
 2. Commit and push the factory files to the base branch (or open a PR for them). Cloud sessions clone from GitHub, so files you haven't pushed don't exist for them.
 3. Run **`/factory:setup`**, locally or in a cloud session. It:
    - reads existing Claude Code commands and skills, CI, and project files to find the install, test, lint and run commands, and the PR base branch (for example `staging`)
@@ -124,6 +145,38 @@ The commands don't move cards themselves. GitHub Projects can only be changed th
 5. Test the board: add `factory:ready` to any issue by hand and watch the card move. If a column name doesn't match, the Action fails with a message naming it.
 
 Run `/factory:setup --check` any time to see what's missing without changing anything. `scripts/factory-labels.sh` still works if you want to create the labels by hand.
+
+## Updating a repo that already has the factory
+
+The factory changes as builds teach it things. To bring a repo up to the current version, pull this repo and run the same installer:
+
+```bash
+git -C code-factory pull
+```
+
+```bash
+code-factory/scripts/factory-install.sh --check path/to/your-repo
+```
+
+```bash
+code-factory/scripts/factory-install.sh path/to/your-repo
+```
+
+`--check` lists each file that would change and exits 1 if the repo is behind, so it also works as a "are we current?" test. After the real run, read `git diff` in your repo, commit on a branch and merge it to the base branch. Cloud sessions load the commands from GitHub, so an update only takes effect once it's merged.
+
+What an update does to each kind of file:
+
+| Files | On update |
+|---|---|
+| **Factory files:** `.claude/commands/factory/`, `.claude/agents/factory-*.md`, `.claude/factory/*.md`, `.claude/skills/factory/`, `.claude/hooks/factory-guard.sh` | Replaced with this repo's version |
+| **Repo files:** `.claude/settings.json`, `.github/workflows/factory-board.yml` | Kept. The installer says when yours differs from this repo's, so you can bring a change across by hand and keep your board number and column names |
+| `CLAUDE.md`, `.claude/rules/audit-rulebook.md`, `plans/` and everything else | Never touched |
+
+- **Edits you made to factory files are replaced.** They stay in your git history, and `git diff` shows exactly what changed before you commit. Keep team rules in CLAUDE.md or `.claude/rules/audit-rulebook.md`; the factory reads both and the installer leaves them alone. If you improved a factory file, open a PR here so every repo gets it.
+- **Uncommitted edits are protected.** A factory file with uncommitted changes is reported as `BLOCKED` and left alone. Commit or stash it and run again, or pass `--force`.
+- **Files the factory no longer ships** are reported as `stale`. Pass `--prune` to delete them.
+- **The version is recorded** in `.claude/factory/VERSION` (this repo's commit and date), and the installer prints it next to the version it is about to install.
+- **Then run `/factory:setup --check`.** An update never edits CLAUDE.md, so a new setting the update expects, such as `Factory worktree prep:`, shows up there as missing. Run `/factory:setup` to fill it in.
 
 ## 2. Create a cloud environment for the repo (10 min)
 
