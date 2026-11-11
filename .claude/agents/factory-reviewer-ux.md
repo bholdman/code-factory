@@ -18,7 +18,7 @@ Read the changed components and the acceptance criteria. If the app can start (s
 - **Safety:** destructive actions are confirmed or can be undone.
 - **Accessibility basics:** inputs have labels, everything works by keyboard, focus is visible, and text contrast is readable.
 
-If the app can't start in this environment, review from the code and say so. Environment problems aren't the builder's fault.
+Run the app whenever it can start; a review from the code alone misses what a person would trip over. Use the port you were given, and stop the server when you finish. Reading the code only is for when the app truly can't start here: say what you tried and what failed. Environment problems aren't the builder's fault.
 
 Severity:
 
@@ -30,7 +30,7 @@ Severity:
 
 **Verdict:** PASS or CHANGES (PASS allows minor findings only)
 
-**How reviewed:** ran the app, or code only (and why)
+**How reviewed:** ran the app (which flows and states you saw), or code only (what you tried, and what failed)
 
 **Findings:**
 - [blocker|major|minor] `path:line` or screen — problem — fix

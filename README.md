@@ -16,20 +16,23 @@ Drop this into a repo, commit it, and the `/factory:*` commands work in every Cl
 1. **`/factory:plan 41`** plans the issue, creates its branch (`factory/41-csv-invoice-export`), commits the plan to the root `plans/` folder (`plans/41-csv-invoice-export.md`), pushes, and links the plan from the issue.
 2. **You approve** by adding `factory:ready`. With one issue you can also answer its questions and approve right in the session.
 3. **`/factory:build 41`** checks out that branch, reads the plan file, builds test-first, runs the reviewers, and opens the PR from the same branch.
-4. **You review and merge.** The plan file merges with the code, so the plan stays next to the change it explains.
+4. **You review.** Findings on the PR, yours or a review bot's, go back through the builder and a reviewer before they're pushed, and are recorded on the issue.
+5. **You merge.** The plan file merges with the code, so the plan stays next to the change it explains.
 
 | Command | What it does |
 |---|---|
 | `/factory:setup [--check]` | Prepares the repo: finds and runs its commands, writes the CLAUDE.md sections, creates labels, configures the board workflow, and checks main-branch protection |
 | `/factory:plan <issues> [--batch] [--design N \| --no-design]` | Plans each issue, creates its branch, commits and pushes the plan, links it from the issue |
 | `/factory:design <issue> [--options N] [--choose X]` | Creates design options for UI work as a Design artifact, links them from the plan, and snapshots the one you pick onto the branch |
-| `/factory:build <issue>` | Builds from the plan branch with review agents, opens the PR |
+| `/factory:build <issue>` | Builds from the plan branch with review agents, opens the PR, and sees review findings through until it merges. Run it again to resume an interrupted build |
 | `/factory:pr-audit <pr>` | Read-only review of any PR against the rulebook, posted as one COMMENT review; on factory PRs it also checks the plan and evidence |
-| `/factory:status` | Lists factory issues by stage |
+| `/factory:status` | Lists factory issues by stage, and flags stalled builds, merged PRs whose issue is still open, and leftover labels |
 
 `/factory <mode> <args>` (for example `/factory build 41`) also works and routes to the same commands.
 
 Every command runs only when you type it at the start of a message; Claude can't start one on its own. That keeps anything that writes to GitHub or edits code behind a deliberate entry point.
+
+When a command needs a decision from you in the session, it asks in a popup with suggested answers, its recommendation first. It never leaves a question in the transcript for you to find. Unattended runs put the question on the issue instead.
 
 ## Planning: with you or in batch
 
@@ -60,7 +63,7 @@ Set `Factory design system:` in CLAUDE.md to say what designs should look like: 
 .github/workflows/factory-board.yml  moves board cards when stage labels change
   skills/factory/SKILL.md          /factory <mode> router
   factory/
-    conventions.md                 flow, branch and plan file, labels, REST calls, worktrees, reviewers
+    conventions.md                 flow, branch and plan file, labels, asking a human, REST calls, worktrees, subagents, reviewers
     planning.md                    planning procedure + plan template
     audit-rulebook.md              starter review rules (pr-audit and code reviewer)
   agents/
@@ -177,13 +180,16 @@ Auto mode keeps a build from stalling on permission prompts while you're away. T
 | `factory:in-review` | PR open; review it | `/factory:build` |
 | `factory:needs-human` | Blocked on one question | Any command |
 
-On `factory:needs-human`, read the `## Factory decision` comment, answer in the issue or edit the plan file, re-add `factory:ready`, and run `/factory:build` again. It picks up on the same branch.
+On `factory:needs-human`, read the `## Factory decision` comment, answer in the issue or edit the plan file, re-add `factory:ready`, and run `/factory:build` again. It picks up on the same branch. In a session you're watching, a blocked build asks you in a popup first and carries on with your answer.
+
+A build that was interrupted keeps `factory:building`; run `/factory:build` on it again to resume. When the PR merges, the build removes `factory:in-review` if its session is still watching, and `/factory:status` lists any label left behind.
 
 ## Tips
 
 - Start with 3 builds at once. Cloud sessions share your Claude plan's usage limits, and each build runs a builder, up to four reviewers and an approver per round, mostly on Opus.
 - Commands must start the message. "Please /factory:build 41" won't run it.
-- Both commands work in a temporary git worktree, so your own checkout is never switched or touched.
+- Both commands work in a temporary git worktree, so your own checkout is never switched or touched. A new worktree holds only tracked files: if tests need built assets or generated files, set `Factory worktree prep:` in CLAUDE.md (`/factory:setup` finds it).
+- Changes sized M or larger, and ones that touch money, webhooks, jobs, migrations or permissions, get their code review on the session's strongest model. Small changes to an existing screen get one frontend reviewer instead of two.
 - If the repo has a skill or command with a browser acceptance-testing procedure, the UI reviewer follows it. Commit it to the repo so cloud sessions see it too.
 
 ## Credits

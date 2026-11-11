@@ -35,7 +35,8 @@ Run each candidate and record what happened. Stop a command that hangs.
 3. **Unit tests.** First run a single fast test file to prove the command's shape works. Then run the full suite once. If it takes more than about 10 minutes, run it in the background and check back. Record how long the full suite took, since builders use that to decide when to run it. If tests fail before any change, record which ones; that's the baseline, not something to fix here.
 4. **Lint and type check.** Run them. Record pre-existing failures the same way.
 5. **Pre-commit checks.** If the repo uses them (overcommit, pre-commit, husky, lefthook, or a `HOOKS_CMD`), run them.
-6. **Start the app.** Start it in the background, poll the URL until it answers (up to about 90 seconds), note the URL and port, then stop it. If it needs a login for browser checks, look for a seeded test account; never record a real one.
+6. **Start the app.** Start it in the background, poll the URL until it answers (up to about 90 seconds), note the URL and port, then stop it. If it needs a login for browser checks, look for a seeded test account; never record a real one. Log in with it once before recording it. Docs and seed files drift apart, and a login that doesn't work costs every UI review a detour.
+7. **A fresh worktree.** Builds and reviews run in a new git worktree, which holds only tracked files. Create one (`git worktree add /tmp/factory-setup/wt origin/$BASE_BRANCH`), run the single fast test file and the pre-commit checks there, then remove it. Whatever it took to make them pass that git doesn't track (compiling assets, generating files, signing hook config) becomes `Factory worktree prep:`. If nothing was needed, leave that setting out.
 
 A command you can't get working stays in the section with a short note on what failed, so a human can finish it.
 
@@ -53,7 +54,7 @@ Draft both sections in the format of `claude-md-snippet.md`, filled in:
 - Pre-commit checks: `<cmd>`
 - Start the app for browser checks: `<cmd>` (URL: <url>)
 - Test login for browser checks: <where the seeded test account comes from>
-- Services: <what must be running, and how to start it in a cloud session>
+- Services: <what must be running, how to start it in a cloud session, and how to restart it after the container has idled>
 - Known failures before any change: <tests or lint rules that already fail, or "None">
 
 ## Factory settings
@@ -62,8 +63,9 @@ Draft both sections in the format of `claude-md-snippet.md`, filled in:
 - Factory branch: <the team's branch convention if one exists, else factory/{number}-{slug}>
 - Factory plan dir: plans
 - Factory plan file: <detected pattern, else {number}-{slug}.md>
-- Factory reviewers: <ask; leave out if none>
-- Factory design system: <ask: a claude.ai design system link, or which of the app's own components and styles designs must match>
+- Factory worktree prep: <the command from step 2.7; leave out if a fresh worktree needed nothing>
+- Factory reviewers: <ask with the popup; leave out if none>
+- Factory design system: <ask with the popup: the app's own components and styles, naming which ones designs must match, or a claude.ai design system link>
 - MAX_INLINE: <the team's existing value, else 15>
 - APP_GLOBS / TEST_GLOBS / MIGRATION_GLOBS / FRONTEND_GLOBS: <the team's existing globs, else inferred from the layout>
 ```
@@ -98,10 +100,10 @@ mk factory:needs-human D93F0B "Agent escalated; needs a human decision"
 
 **Filling in the board workflow:**
 
-- Owner and number: from existing configuration if it names a board (such as `your-org/12`); otherwise ask for the board's URL.
+- Owner and number: from existing configuration if it names a board (such as `your-org/12`); otherwise ask for the board's URL with the popup (the person types it under "Other"; offer "No board" as a choice).
 - Column names: they must match the board's Status options exactly.
   - Locally, read them: `gh project field-list <number> --owner <owner> --format json` and use the options of the Status field (or whichever field the board's columns come from).
-  - In a cloud session that call fails, because the GitHub proxy blocks GraphQL. Ask the human to paste the board's column names.
+  - In a cloud session that call fails, because the GitHub proxy blocks GraphQL. Ask for the board's column names with the popup (the person types them under "Other").
 - Map each stage label to the closest column and show the mapping. Leave a `COL_*` blank where no column fits.
 
 ## 5. Confirm, then save
@@ -112,7 +114,7 @@ Show the human, in one message:
 - the board mapping
 - the checklist from step 4
 
-Ask: "Save these and open a PR?" On yes:
+Ask with the popup: "Save these and open a PR?" (Save and open a PR (Recommended) / Change something first / Don't save). Every question in this command goes through the popup, as conventions.md ("Asking a human") describes; ask the ones you still have open in one call. On yes:
 
 1. Create the branch `factory/setup` from `origin/$BASE_BRANCH` in a worktree (conventions.md).
 2. Write the CLAUDE.md sections, any `.claude/settings.json` hook merge, and the board workflow values. Labels are already created on GitHub and need no commit.

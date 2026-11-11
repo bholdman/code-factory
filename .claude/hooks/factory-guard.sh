@@ -11,7 +11,7 @@ grep -Eq 'pulls/[0-9]+/merge' <<<"$input" \
   && block "merging through the API is blocked"
 grep -Eq 'git[^"]*push[^"]*(--force|[[:space:]]-f([[:space:]]|")|[[:space:]]\+)' <<<"$input" \
   && block "force push is blocked"
-grep -Eq 'git[^"]*push[^"]*[[:space:]:](main|master|staging|develop|production)([[:space:]]|")' <<<"$input" \
+grep -Eq 'git[^"]*push[^"]*([[:space:]:]|refs/heads/)(main|master|staging|develop|production)([[:space:]]|")' <<<"$input" \
   && block "pushing to a long-lived branch (main, staging, develop, production) is blocked"
 grep -Eq 'git[^"]*push[^"]*(--delete|[[:space:]]-d[[:space:]]|[[:space:]]:[^[:space:]"])' <<<"$input" \
   && block "deleting a remote branch is blocked"

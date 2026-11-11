@@ -17,6 +17,7 @@ Read `git diff <base>...HEAD`, then read the surrounding code each change depend
 - **Data exposure:** responses, logs or errors that return more than the caller needs, especially personal data.
 - **Sessions and CSRF:** state-changing requests are protected the same way as the rest of the app.
 - **Uploads and outbound calls:** file type and size limits, path traversal, and server-side requests to user-supplied URLs.
+- **Replays and races on money and access:** a webhook, job or request that grants credit, access or a refund must be safe to deliver twice, out of order, and concurrently with itself. Trace one interleaving for each such entry point the change touches.
 - **Dependencies and CI:** new packages (real, maintained, pinned?), changed workflow permissions, new uses of secrets.
 
 Severity:
