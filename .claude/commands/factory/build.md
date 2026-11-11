@@ -77,6 +77,8 @@ A recommended PR isn't finished work. Factory PRs often take more commits after 
 
 If the session can receive PR events, subscribe to the PR and keep the worktree. If it can't, say so in the report (section 7); running `/factory:build <n>` on a `factory:in-review` issue picks up here.
 
+**Finish an interrupted fix round first.** When this section starts on a worktree kept from earlier, compare it with the PR's head: `git -C <worktree> log origin/<branch>..HEAD`, and `git status` for uncommitted files. Anything there that the PR lacks is a fix round that stopped before its review or its push. Finish it before taking a new finding: have the builder complete it if files are uncommitted, review `git diff origin/<branch>...HEAD`, push once it passes, and record it. Otherwise a finding gets judged against code the PR doesn't contain, or a commit reaches the PR with no review.
+
 For each finding or request on the PR:
 
 1. **Check it's real.** Trace a path to the failure in the code. A bot's finding is a claim, not an order. If it doesn't hold, or the fix costs more than it prevents, reply on its thread with what you traced and leave the code alone.
