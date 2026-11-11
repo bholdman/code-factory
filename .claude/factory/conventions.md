@@ -133,6 +133,7 @@ Keep the worktree until the work on the branch is over, then remove it with `git
 - Check what comes back before building on it: the commits exist, nothing is left uncommitted, and the test log shows what the report claims.
 - Push the branch after every stage that adds commits. A cloud container can restart in the middle of a build. The exception is a fix round after the PR opens: it is pushed once its review passes, so the open PR never holds an unreviewed commit.
 - If a subagent is interrupted, look at the worktree before relaunching, and tell the new one what was left behind.
+- If a subagent can't start because its model isn't available or is rate-limited, launch it again with the Agent tool's `model` option set to the next model down (`fable`, then `opus`, then `sonnet`); that option overrides the agent's own `model:` line. Say in the report which agents ran on a fallback. Don't step down for any other kind of failure.
 - Each agent ends its commits with the attribution its own session gives it. A trailer that differs from the orchestrator's isn't an error.
 
 ## Choosing reviewers

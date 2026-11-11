@@ -70,7 +70,7 @@ Set `Factory design system:` in CLAUDE.md to say what designs should look like: 
     planning.md                    planning procedure + plan template
     audit-rulebook.md              starter review rules (pr-audit and code reviewer)
   agents/
-    factory-spec-writer.md         opus
+    factory-spec-writer.md         fable (relaunched on opus if fable isn't available)
     factory-builder.md             opus
     factory-reviewer-security.md   opus
     factory-reviewer-code.md       sonnet
@@ -87,7 +87,9 @@ claude-md-snippet.md               sections to add to the repo's CLAUDE.md
 
 Why it lives in the repo: cloud sessions clone the repo from GitHub and never see your laptop's `~/.claude`. Commands, skills, agents and hooks committed under `.claude/` load in every session automatically.
 
-`model: opus` and `model: sonnet` always mean the latest of each. Change one line to move an agent up or down.
+`model: fable`, `model: opus` and `model: sonnet` always mean the latest of each. Change one line to move an agent up or down.
+
+Planning runs on Fable, the strongest model, because a plan is one cheap run that everything after it depends on. An agent has no fallback setting of its own, so the fallback lives in the commands: if the plan writer can't start on Fable (not on your plan, or rate-limited), `/factory:plan` launches it again on Opus and says so. The `/factory:plan` and `/factory:design` commands also ask for Fable in their own frontmatter. That holds only for the turn the command starts in, and is ignored where Fable isn't available, so for design work start the session itself on Fable. To cover an overloaded model in the middle of a run, add `"fallbackModel": ["opus"]` to your settings; note that it applies to every Claude Code session that reads those settings, not only factory commands.
 
 If the repo has its own `.claude/rules/audit-rulebook.md`, the reviewers and `/factory:pr-audit` use it. Otherwise they fall back to the starter rulebook, which uses the same §1–§5 numbering.
 
@@ -239,7 +241,7 @@ A build that was interrupted keeps `factory:building`; run `/factory:build` on i
 
 ## Tips
 
-- Start with 3 builds at once. Cloud sessions share your Claude plan's usage limits, and each build runs a builder, up to four reviewers and an approver per round, mostly on Opus.
+- Start with 3 builds at once. Cloud sessions share your Claude plan's usage limits, and each build runs a builder, up to four reviewers and an approver per round, mostly on Opus. Planning runs on Fable, which draws more from those limits per run.
 - Commands must start the message. "Please /factory:build 41" won't run it.
 - Both commands work in a temporary git worktree, so your own checkout is never switched or touched. A new worktree holds only tracked files: if tests need built assets or generated files, set `Factory worktree prep:` in CLAUDE.md (`/factory:setup` finds it).
 - Changes sized M or larger, and ones that touch money, webhooks, jobs, migrations or permissions, get their code review on the session's strongest model. Small changes to an existing screen get one frontend reviewer instead of two.

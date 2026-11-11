@@ -2,6 +2,7 @@
 description: Factory — plan GitHub issues, create each issue's branch, commit the plan to it and push, then link it from the issue for approval
 argument-hint: <issue> [issue...] [--batch] [--design N | --no-design]
 disable-model-invocation: true
+model: fable
 ---
 
 # /factory:plan
@@ -26,6 +27,8 @@ For each issue, read it and its comments (REST calls in conventions.md). Skip an
 ## 2. Draft
 
 Launch one `factory-spec-writer` subagent per issue, in parallel, no more than 5 at once. Give each the issue number, title, body, comments, and the CLAUDE.md commands.
+
+The spec writer runs on Fable, because a plan is the cheapest place to buy quality: one run per issue, read by a human, and everything built afterwards inherits its mistakes. If a launch fails because that model isn't available or is rate-limited, launch that issue's writer again with the Agent tool's `model` option set to `opus` (conventions.md, "Running subagents"), and name the model each plan was written on in the report.
 
 If one returns an XL split proposal instead of a plan, post it as a `## Factory decision` comment, label the issue `factory:needs-human`, and skip the rest of the steps for that issue.
 
