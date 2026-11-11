@@ -8,7 +8,7 @@
 - Pre-commit checks: `...`
 - Start the app for browser checks: `...` (URL: http://localhost:3000)
 - Test login for browser checks: `...` (a test account, never a real one)
-- Services: `...` (what must be running, and how to start it in a cloud session)
+- Services: `...` (what must be running, how to start it in a cloud session, and how to restart it after the container has idled)
 - Known failures before any change: None
 
 ## Factory settings
@@ -18,6 +18,7 @@
 - Factory branch: factory/{number}-{slug}
 - Factory plan dir: plans
 - Factory plan file: {number}-{slug}.md
+- Factory worktree prep: `...` (run once in each new worktree, for what tests need that git doesn't track)
 - Factory reviewers: @teammate-github-handle
 - MAX_INLINE: 15
 - APP_GLOBS: `app/ lib/`

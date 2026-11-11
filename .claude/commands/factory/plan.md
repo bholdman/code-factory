@@ -6,7 +6,7 @@ disable-model-invocation: true
 
 # /factory:plan
 
-Arguments: `$ARGUMENTS` (none → ask which issues to plan)
+Arguments: `$ARGUMENTS` (none → ask with the popup, offering the most recently updated open issues that have no factory label)
 
 Read `.claude/factory/conventions.md` first. It defines the branch and plan-file rules, labels, comment headings, REST-only GitHub calls and hard limits this command relies on.
 
@@ -31,13 +31,17 @@ If one returns an XL split proposal instead of a plan, post it as a `## Factory 
 
 ## 3. Checkpoint (with-you mode only)
 
-Show the human, in about 15 lines or fewer: the size, the approach, the scope fence, and the open questions. Wait for answers. Send the answers back to the same `factory-spec-writer` to revise the plan, then show the revised plan and ask: "Approve this plan for build?"
+**Always link the plan.** Before you show the human a draft, run step 4 for it (branch, commit and push the plan file) so it can be read on GitHub. Every time you show a plan, first or revised, give the human the link `https://github.com/<REPO>/blob/<branch>/<plan file path>` along with the summary. When a revision comes back, commit it to the same branch (`docs(#<n>): revise factory plan`), push, and link it again. Never ask the human to approve a plan they haven't been given a link to.
+
+Show the human, in about 15 lines or fewer: the plan link, the size, the approach, the scope fence, the human steps, and the open questions. Ask the open questions with the AskUserQuestion tool (the popup), one question per open question, with the plan's recommended default as the first option. Every question in this command goes through the popup, as conventions.md ("Asking a human") describes. Where the recommended default departs from how the repo already does the same thing, say so in that option's description. Wait for answers. Send the answers back to the same `factory-spec-writer` to revise the plan, push the revision, then show the revised plan's link and summary and ask with AskUserQuestion: "Approve this plan for build?"
 
 Don't plan around unanswered product questions. If the human would rather answer later, keep the questions in the plan and continue.
 
-**Design.** If the plan's `Needs design` line is yes (it changes screens a user sees), ask before the approval question: "This changes <screens>. Include design? How many options? (1–4, default 3)". Hold the answer until the branch exists, then run step 4a.
+**Design.** If the plan's `Needs design` line is yes (it changes screens a user sees), ask with the popup before the approval question, as two questions in one call: "This changes <screens>. Include design?" (Yes / No) and "How many design options?" (3 (Recommended) / 1 / 2 / 4). Hold the answer until the branch exists, then run step 4a.
 
 ## 4. Branch, commit, push
+
+In with-you mode this runs during step 3, before the plan is first shown, and again for each revision. In batch mode it runs after step 2.
 
 For each plan, one issue at a time:
 
@@ -45,11 +49,11 @@ For each plan, one issue at a time:
 2. Open a worktree on it as conventions.md describes: a new branch from `origin/$BASE_BRANCH`, or the existing branch on a re-plan.
 3. Write the plan to the plan file (`plans/<n>-<slug>.md` by default, or the `Factory plan dir:` and `Factory plan file:` from CLAUDE.md). On a re-plan, overwrite the file; git history keeps the old version.
 4. Commit only that file: `docs(#<n>): factory plan — <issue title>` (re-plan: `docs(#<n>): revise factory plan`).
-5. Push: `git -C <worktree> push -u origin <branch>`. Then remove the worktree.
+5. Push: `git -C <worktree> push -u origin <branch>`. In with-you mode, keep the worktree until the plan is approved or the human stops revising, then remove it.
 
 ## 4a. Design (when included)
 
-For each plan where design is included, follow `.claude/commands/factory/design.md` steps 3–5 on its branch: write the brief, create the options, and link them from the plan's `### Design` section. In with-you mode, show the options and ask the human to pick one now or later; on a pick, run that file's step 6.
+For each plan where design is included, follow `.claude/commands/factory/design.md` steps 3–5 on its branch: write the brief, create the options, and link them from the plan's `### Design` section. In with-you mode, show the options and ask with the popup which one to build, one choice per option plus "Pick later"; on a pick, run that file's step 6.
 
 In batch mode without `--design`, set the plan's design status to "not decided" and add an open question: "Include design for <screens>? Run `/factory:design <n>`."
 
@@ -69,8 +73,11 @@ Post a `## Factory plan` comment on the issue:
 
 <the plan's summary>
 
+**Human steps**
+- <who does what, and by when: before the build, before merge, or before release> (or "None")
+
 **Open questions**
-- [ ] <question> (or "None")
+- [ ] <question, with its options and the recommended one first> (or "None")
 
 To change the plan, edit the file on the branch. Answers and notes left as comments here are read by `/factory:build`. Add `factory:ready` to approve.
 ```
@@ -86,4 +93,4 @@ Remove `factory:needs-human` and the other stage label if present.
 
 ## 6. Report
 
-A short table: issue, size, branch, open questions, link to the comment. End with what happens next: approved issues can run `/factory:build <n>`; the rest need `factory:ready` once a human approves them.
+A short table: issue, size, branch, open questions, link to the plan file on GitHub, link to the comment. End with what happens next: approved issues can run `/factory:build <n>`; the rest need `factory:ready` once a human approves them.

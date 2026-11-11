@@ -8,7 +8,7 @@ A human reads and approves every plan before code is written, so write for that 
 
 1. **Read `CLAUDE.md`.** Use the "Commands the factory runs" section, the project rules, and any orientation or review-hotspot notes.
 2. **Copy the acceptance criteria word for word.** If the issue groups them (for example into implementation and test criteria), keep the groups. If the issue has none, derive them and mark each one "(derived)" so the human checks it.
-3. **Explore just enough code.** Find the entry points, an existing feature whose patterns you can copy, the tests that cover the area, and recent changes nearby (`git log --oneline -20 -- <path>`). Read files selectively.
+3. **Explore just enough code.** Find the entry points, an existing feature whose patterns you can copy, the tests that cover the area, and recent changes nearby (`git log --oneline -20 -- <path>`). Read files selectively. Find how the repo already does the nearest equivalent thing (where its config and secrets live, how similar features are named and wired) and plan this the same way. A plan that invents a second way to do something the repo already does gets reversed in review.
 4. **Size it.**
 
    | Size | Rough effort | What to do |
@@ -21,10 +21,11 @@ A human reads and approves every plan before code is written, so write for that 
 
    Big builds are where agents drift, so lean toward splitting.
 5. **Fence the scope.** List the files you expect to change. The builder treats anything outside that list as needing a reason.
-6. **Pick a test for every criterion.** Name the test file and case (new or existing), the level (unit, integration, system, browser), and what it asserts. Every criterion maps to at least one step and one test, because that mapping is what the reviewers and the approver check later.
-7. **List open questions.** Put product decisions you can't settle from the issue or the code here. Don't guess at them.
-8. **Flag design work.** Set `Needs design: yes` when the change adds or reworks screens a user sees, and list those screens and states. Copy changes, small tweaks to an existing screen, and changes that follow a design the issue already links are usually no.
-9. **Suggest a branch slug:** 3–5 kebab-case words describing the work, such as `csv-invoice-export`.
+6. **Pick a test for every criterion.** Name the test file and case (new or existing), the level (unit, integration, system, browser), and what it asserts. Every criterion maps to at least one step and one test, because that mapping is what the reviewers and the approver check later. For code that can run more than once or at the same time (webhook handlers, background jobs, retries, double submits, payment callbacks), also name a test for the repeated, out-of-order or concurrent case. These are the bugs that review after the PR has found most often.
+7. **Separate what only a human can do.** Some steps are out of an agent's reach: secrets and credentials, hosting and third-party dashboards, anything that needs access the session doesn't have. Keep the approach the repo already uses and list those steps under `### Human steps`, saying who does what and whether it must happen before the build, before merge or before release. Don't redesign the change around what an agent can't reach. If that seems necessary, make it an open question that names the convention the plan would be leaving.
+8. **List open questions.** Put product decisions you can't settle from the issue or the code here. Don't guess at them. Write each so it can be answered by choosing: give two to four options with your recommended default first, because `/factory:plan` asks them in a popup.
+9. **Flag design work.** Set `Needs design: yes` when the change adds or reworks screens a user sees, and list those screens and states. Copy changes, small tweaks to an existing screen, and changes that follow a design the issue already links are usually no.
+10. **Suggest a branch slug:** 3–5 kebab-case words describing the work, such as `csv-invoice-export`.
 
 ## Plan template
 
@@ -58,11 +59,14 @@ A human reads and approves every plan before code is written, so write for that 
 ### Risks and edge cases
 - <risk> → <how the plan handles it>
 
+### Human steps
+- <who does what> · <before the build | before merge | before release> (write "None" if there are none)
+
 ### Expected reviewers
 security: yes/no — <why> · ux: yes/no · ui: yes/no
 
 ### Open questions
-- [ ] <question for a human> (write "None" if there are none)
+- [ ] <question for a human> · options: <recommended default> / <alternative> (write "None" if there are none)
 ```
 
 For XL, return this instead of a plan:

@@ -20,10 +20,10 @@ From the plan, list the screens and states the change touches: each new or chang
 
 ## 2. Ask (unless the arguments already answer it)
 
-Ask in one message:
+Ask with the popup (conventions.md, "Asking a human"), as two questions in one call:
 
-1. "This issue changes <screens>. Include design?" (yes / no)
-2. "How many design options? (1–4, default 3)"
+1. "This issue changes <screens>. Include design?" (Yes / No)
+2. "How many design options?" (3 (Recommended) / 1 / 2 / 4)
 
 With `--options N`, skip both questions. On "no", record `Status: skipped` in the plan (step 5) and stop.
 
@@ -41,7 +41,7 @@ Write the brief to `/tmp/factory-<n>/design-brief.md`:
 
 **With the Artifact tool's Design type** (check with Artifact `quickstart`, intent `design`):
 
-1. **Match the app.** If `Factory design system:` is a claude.ai design system link, run the quickstart with `design_systems: false` and read that design system with its own call. If it names the app's own components and styles instead, don't attach a design system: read those components, a neighboring screen, and the style config (for example the Tailwind theme), and reproduce their colors, type, spacing and components on the canvas so every option looks like this app. If the setting is missing, ask which to use; with nobody to answer, match the app's own components.
+1. **Match the app.** If `Factory design system:` is a claude.ai design system link, run the quickstart with `design_systems: false` and read that design system with its own call. If it names the app's own components and styles instead, don't attach a design system: read those components, a neighboring screen, and the style config (for example the Tailwind theme), and reproduce their colors, type, spacing and components on the canvas so every option looks like this app. If the setting is missing, ask with the popup which to use (the app's own components (Recommended) / a claude.ai design system link); with nobody to answer, match the app's own components.
 2. **Create the canvas.** Publish from the Design type's `type_url` with the title `#<n> <issue title>`, no files, and `auto_open: "after_first_write"`, then follow the instructions the create result carries. If the plan already links a design for this issue, update that artifact by its URL instead of creating another.
 3. **Draw the options.** One canvas, with each option as its own labelled group of artboards (`A — compact table`, `B — card list`, …). Every option shows every screen and state from step 1, at desktop and mobile widths.
 4. **Share.** Artifacts start private. Tell the human to share the canvas with the team from claude.ai, or reviewers on the issue can't open the link.
@@ -74,6 +74,8 @@ Commit the plan file on the issue's branch (`docs(#<n>): add design options`) an
 The issue stays `factory:planned` until a design is chosen. Don't add `factory:ready` while the design status is waiting.
 
 ## 6. Record the pick (`--choose <option>`, or the human answers in the session)
+
+With a person in the session and no `--choose`, ask with the popup which option to build: one choice per option, named by its direction, plus "Pick later".
 
 1. Set `Status: chosen: <option>` and `Chosen: <option>` in the plan file.
 2. **Snapshot the chosen option onto the branch.** The builder and reviewers can't open claude.ai, and the build may run in a cloud session, so they need a copy.

@@ -6,7 +6,7 @@ disable-model-invocation: true
 
 # /factory:pr-audit
 
-PR: `$ARGUMENTS` (none → ask)
+PR: `$ARGUMENTS` (none → ask with the popup, offering the open PRs, factory PRs first)
 
 Review a pull request the way a careful senior teammate would: read-only, grounded in the rulebook, and posted as one review. It works on teammates' PRs and on factory PRs. For a factory PR, it also checks the work against its approved plan and verifies the evidence the approver claimed.
 
@@ -40,6 +40,7 @@ Factory PRs get three more checks:
 - **Plan conformance:** every plan step shows up in the diff, changes outside the plan's scope fence are findings (Medium, unless trivial), and the plan file wasn't edited by the build.
 - **Evidence:** for each acceptance criterion the PR body claims, confirm the named test exists and actually asserts that criterion. A claim the code doesn't back is High.
 - **Review history:** blocker and major findings from the factory review rounds are resolved or explained.
+- **Unreviewed commits:** list the commits pushed after the newest `## Factory review` comment on the issue. No factory reviewer saw them, so read them with the most care and name them in the summary.
 
 ## Phase 2 — Post the review
 
@@ -85,6 +86,7 @@ gh api repos/$REPO/pulls/<n>/reviews --method POST --input /tmp/factory-pr-audit
 | Changes outside the scope fence | None, or which |
 | Criteria evidence holds | n of m, naming any that don't |
 | Factory review findings resolved | Yes, or which aren't |
+| Commits after the last factory review | None, or which (no factory reviewer saw these) |
 
 ### High
 | File | Issue |
