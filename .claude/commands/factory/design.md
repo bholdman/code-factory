@@ -2,6 +2,7 @@
 description: Factory — create design options for an issue's UI work as a Design artifact, link them from the plan, and record the option the human picks
 argument-hint: <issue> [--options N] [--choose <option>]
 disable-model-invocation: true
+model: fable
 ---
 
 # /factory:design
@@ -11,6 +12,8 @@ Arguments: `$ARGUMENTS`
 Read `.claude/factory/conventions.md` first. `/factory:plan` runs this command's steps when a plan includes design work; you can also run it on its own, for example after a batch plan, or to add options later.
 
 A builder working from a picked design builds what the human actually wants. A builder working from a text description builds its own guess. So for UI work, the plan carries a link to the design options, and once the human picks one, a snapshot of it on the branch.
+
+Design is done by this session, not by a subagent, so its quality follows the session's model. The `model: fable` line above asks for Fable, but it holds only for the turn the command starts in; later turns, such as the one after the human picks an option, run on the session's own model. For design work, start the session on the strongest model available. If Fable isn't available, the session's model is used and nothing else changes.
 
 ## 1. Load the issue and plan
 
