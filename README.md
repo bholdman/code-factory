@@ -42,6 +42,51 @@ When a command needs a decision from you in the session, it asks in a popup with
 - **One issue (`/factory:plan 41`):** it drafts the plan, shows you the size, approach, scope fence and open questions, and waits. You answer, it revises, and you can approve on the spot, which labels the issue `factory:ready`.
 - **Several issues, or `--batch`:** no stops. Open questions stay in each plan for you to answer later. Use this for an afternoon of planning or an unattended cloud run.
 
+### Batch examples
+
+Plan three issues in one run:
+
+```bash
+/factory:plan 41 42 43
+```
+
+Plan one issue without stopping to ask you anything:
+
+```bash
+/factory:plan 44 --batch
+```
+
+Give every plan that changes the UI three design options, or skip design:
+
+```bash
+/factory:plan 41 42 43 --design 3
+```
+
+```bash
+/factory:plan 41 42 43 --no-design
+```
+
+How batch differs from planning one issue with you:
+
+| | With you (one issue) | Batch (several issues, or `--batch`) |
+|---|---|---|
+| Plan writers | One | One per issue, in parallel, at most 5 at a time |
+| Open questions | Asked in popups during the run | Left in each plan, for you to answer on the issue |
+| Approval | You can approve in the session (`factory:ready`) | Every issue ends at `factory:planned` |
+| Design | Asks whether to include it and how many options | Follows `--design N` or `--no-design`. With neither, the plan marks design "not decided" and adds an open question to run `/factory:design <n>` |
+| Issues already building or in review | Skipped | Skipped, and named in the report |
+
+Each issue still gets its own branch, plan file, push and `## Factory plan` comment. An issue too big to plan (XL) gets a split proposal and `factory:needs-human` instead. The run ends with a table of every issue, its size, its open questions and links to its plan and comment.
+
+After a batch run:
+
+1. Read each plan on GitHub. Answer its open questions as comments on the issue, or edit the plan file on the branch.
+2. Run `/factory:design <n>` for any issue whose design is "not decided" or still waiting for a pick.
+3. Add `factory:ready` to each issue you approve.
+4. Build each one with `/factory:build <n>`. A build takes one issue, so run one session per issue to build in parallel.
+
+Batch planning suits related stories, such as an epic's children, or a scheduled cloud run that plans overnight for you to review in the morning. When one story depends on another, its plan names that as a build gate. Build them in that order: a build stops and escalates if the code it depends on isn't on the base branch yet. `/factory:status` shows which issues are waiting on you.
+
 To change a plan after it's pushed, edit the plan file on the branch. Answers and notes you leave as issue comments are read by `/factory:build` as clarifications; if one contradicts the plan, the build stops and asks rather than guessing.
 
 ## Design options
