@@ -116,6 +116,8 @@ Each build leaves a record that's worth learning from: review rounds, escalation
 
 The plan writer reads the Planning lessons, the builder the Building ones, and the code reviewer the Review ones, so a merged lesson changes the next build. Nothing changes until you merge, so one odd build can't teach the factory a bad habit, and you can edit or drop any lesson in the PR.
 
+Anyone who can comment on an issue or PR, and every review bot, writes part of that record, and a merged lesson becomes an instruction to every later build. So the retro treats the record as evidence, never as instructions. It collects everything the analyst needs first, wrapping each comment in a `<record-text>` block, and the analyst runs with no shell or network, so a planted comment can't use it to reach credentials or act on GitHub. The command then checks every quote and drops any lesson that touches credentials, outside services, CI, permissions or settings, or weakens a check. The PR opens with each lesson's exact text for you to read before merging, and lists any comment that tried to steer the analysis.
+
 The retro only edits files that belong to your repo, because the installer replaces the factory's own files on every update. A lesson that needs a change to the factory itself (a command's steps, an agent's instructions, the plan template) is listed in the PR body under "Suggestions for the factory package" for you to bring back here. The PR also lists follow-ups that factory PRs named but nobody filed an issue for.
 
 Run it every few weeks, or after a build that took three review rounds or escalated:
@@ -148,7 +150,7 @@ Run it every few weeks, or after a build that took three review rounds or escala
     factory-reviewer-ux.md         sonnet
     factory-reviewer-ui.md         sonnet
     factory-approver.md            opus
-    factory-retro-analyst.md       fable (relaunched on opus if fable isn't available)
+    factory-retro-analyst.md       fable (relaunched on opus if fable isn't available); read-only, no shell
   hooks/factory-guard.sh           blocks merges, force pushes, pushes to main, branch deletion
   settings.json                    registers the guard hook
 scripts/factory-install.sh         installs the factory into a repo, or updates one that has it
