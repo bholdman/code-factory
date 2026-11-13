@@ -96,7 +96,7 @@ Each stage label has a column on the team's GitHub Project board, and the card m
 
 ## Before you start
 
-1. Read the repo's `CLAUDE.md`: the "Commands the factory runs" section, any project rules, and any orientation or review-hotspot notes. Project rules bind with the same force as the factory's own rules. If the commands section is missing, say so in your final report, because work without known test commands is much weaker.
+1. Read the repo's `CLAUDE.md`: the "Commands the factory runs" section, any project rules, any orientation or review-hotspot notes, and `## Factory lessons` (written by `/factory:retro` from earlier builds). Project rules and lessons bind with the same force as the factory's own rules. If the commands section is missing, say so in your final report, because work without known test commands is much weaker.
 2. Set `REPO`, `DEFAULT` and `BASE_BRANCH` as above, and check access with `gh api repos/$REPO -q .full_name`.
 3. Keep large outputs (diffs, test logs, screenshots) in `/tmp/factory-<n>/` and pass subagents paths, not contents.
 4. You're in a cloud session when `CLAUDE_CODE_REMOTE` is `true`. Push before a cloud session ends; unpushed cloud work is lost.
@@ -153,6 +153,7 @@ Reviewers run the tests for the areas the change touches. The approver runs the 
 
 - Planning procedure and plan template: `.claude/factory/planning.md`
 - Review rules: `.claude/rules/audit-rulebook.md` if the repo has one (the team's own rulebook), otherwise `.claude/factory/audit-rulebook.md`
+- Lessons from earlier builds: the `## Factory lessons` section of CLAUDE.md, proposed by `/factory:retro` and merged by a human. It belongs to the repo, not the factory package, so updates never overwrite it.
 
 ## Settings in CLAUDE.md
 

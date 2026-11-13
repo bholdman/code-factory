@@ -14,7 +14,7 @@ Every builder and reviewer runs the commands this writes into CLAUDE.md, so a wr
 
 ## 0. Check the factory files are here
 
-Confirm these exist: `.claude/commands/factory/{plan,build,status,pr-audit}.md`, `.claude/factory/{conventions,planning,audit-rulebook}.md`, the seven `.claude/agents/factory-*.md` files, `.claude/hooks/factory-guard.sh`, and `.github/workflows/factory-board.yml`. If any are missing, stop and say which; they come from the factory package and aren't something to generate.
+Confirm these exist: `.claude/commands/factory/{plan,design,build,status,pr-audit,retro}.md`, `.claude/factory/{conventions,planning,audit-rulebook}.md`, the eight `.claude/agents/factory-*.md` files, `.claude/hooks/factory-guard.sh`, and `.github/workflows/factory-board.yml`. If any are missing, stop and say which; they come from the factory package and aren't something to generate.
 
 ## 1. Gather what the repo already says
 
