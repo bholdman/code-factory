@@ -30,6 +30,7 @@ Drop this into a repo, commit it, and the `/factory:*` commands work in every Cl
 | `/factory:build <issue>` | Builds from the plan branch with review agents, opens the PR, and sees review findings through until it merges. Run it again to resume an interrupted build |
 | `/factory:pr-audit <pr>` | Read-only review of any PR against the rulebook, posted as one COMMENT review; on factory PRs it also checks the plan and evidence |
 | `/factory:status` | Lists factory issues by stage, and flags stalled builds, merged PRs whose issue is still open, and leftover labels |
+| `/factory:retro [--since DATE \| --last N] [--dry-run]` | Looks back over recently finished issues, finds what the plan or the build's review missed, and proposes lessons for CLAUDE.md as a PR you merge |
 
 `/factory <mode> <args>` (for example `/factory build 41`) also works and routes to the same commands.
 
@@ -102,12 +103,37 @@ An issue stays `factory:planned` until a design is picked, and `/factory:build` 
 
 Set `Factory design system:` in CLAUDE.md to say what designs should look like: a claude.ai design system link, or the app's own components and styles to match. Optionally, run `/design-sync` once to load the repo's components into a design system. A session without the Design artifact type uses Claude Design tools if it has them; otherwise it prints the brief for you to make the design in Claude and paste the link back.
 
+## Learning from past builds
+
+The factory has no memory between runs. Every plan and build starts from the repo's files: CLAUDE.md, the rulebook and the factory's own instructions. What it learns is what someone writes into those files.
+
+Each build leaves a record that's worth learning from: review rounds, escalations, `## Factory decision` comments, the plan's `### Changes after approval`, and the PR's deviations and follow-ups. `/factory:retro` reads that record and writes the lessons down for you to approve:
+
+1. It collects every factory issue closed since the last retro (or the last 30 days), with its comments, its PR's reviews and review comments, and its plan's changes after approval.
+2. A `factory-retro-analyst` agent lists each finding that changed the work after the plan was approved, where it was caught, and the earliest stage that could fairly have caught it. A bug the right reviewer found in round 1 is the process working, not a lesson.
+3. It groups those by cause and keeps a lesson only when two or more issues show it, or one issue shows a blocker or major that surfaced after the PR opened or that a human caught.
+4. It opens a PR (`factory/retro-<date>`) that adds the lessons to a `## Factory lessons` section of CLAUDE.md, under Planning, Building and Review, each citing the issues behind it. If the repo has its own `.claude/rules/audit-rulebook.md`, a lesson that's a reviewable rule goes there instead.
+
+The plan writer reads the Planning lessons, the builder the Building ones, and the code reviewer the Review ones, so a merged lesson changes the next build. Nothing changes until you merge, so one odd build can't teach the factory a bad habit, and you can edit or drop any lesson in the PR.
+
+The retro only edits files that belong to your repo, because the installer replaces the factory's own files on every update. A lesson that needs a change to the factory itself (a command's steps, an agent's instructions, the plan template) is listed in the PR body under "Suggestions for the factory package" for you to bring back here. The PR also lists follow-ups that factory PRs named but nobody filed an issue for.
+
+Run it every few weeks, or after a build that took three review rounds or escalated:
+
+```bash
+/factory:retro
+```
+
+```bash
+/factory:retro --since 2026-10-01 --dry-run
+```
+
 ## What's in here
 
 ```text
 .claude/
   commands/factory/
-    setup.md  plan.md  design.md  build.md  pr-audit.md  status.md
+    setup.md  plan.md  design.md  build.md  pr-audit.md  status.md  retro.md
 .github/workflows/factory-board.yml  moves board cards when stage labels change
   skills/factory/SKILL.md          /factory <mode> router
   factory/
@@ -122,6 +148,7 @@ Set `Factory design system:` in CLAUDE.md to say what designs should look like: 
     factory-reviewer-ux.md         sonnet
     factory-reviewer-ui.md         sonnet
     factory-approver.md            opus
+    factory-retro-analyst.md       fable (relaunched on opus if fable isn't available)
   hooks/factory-guard.sh           blocks merges, force pushes, pushes to main, branch deletion
   settings.json                    registers the guard hook
 scripts/factory-install.sh         installs the factory into a repo, or updates one that has it
@@ -269,6 +296,8 @@ Auto mode keeps a build from stalling on permission prompts while you're away. T
 **Review and merge:** the PR comes from the issue's branch, links the plan, and lists evidence for each acceptance criterion. Run `/factory:pr-audit <pr>` if you want an independent pass first. You merge, and `Closes #N` closes the issue.
 
 **Status any time:** `/factory:status`
+
+**Learn from it:** every few weeks, `/factory:retro` proposes lessons from what recent builds caught late, as a PR you merge (see "Learning from past builds").
 
 ## How an issue moves
 

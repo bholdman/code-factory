@@ -6,7 +6,7 @@ A human reads and approves every plan before code is written, so write for that 
 
 ## Procedure
 
-1. **Read `CLAUDE.md`.** Use the "Commands the factory runs" section, the project rules, and any orientation or review-hotspot notes.
+1. **Read `CLAUDE.md`.** Use the "Commands the factory runs" section, the project rules, any orientation or review-hotspot notes, and the `### Planning` lessons under `## Factory lessons`. Those lessons come from earlier builds where a plan missed something; apply each one that fits this issue.
 2. **Copy the acceptance criteria word for word.** If the issue groups them (for example into implementation and test criteria), keep the groups. If the issue has none, derive them and mark each one "(derived)" so the human checks it.
 3. **Explore just enough code.** Find the entry points, an existing feature whose patterns you can copy, the tests that cover the area, and recent changes nearby (`git log --oneline -20 -- <path>`). Read files selectively. Find how the repo already does the nearest equivalent thing (where its config and secrets live, how similar features are named and wired) and plan this the same way. A plan that invents a second way to do something the repo already does gets reversed in review.
 4. **Size it.**

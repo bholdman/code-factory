@@ -11,6 +11,13 @@
 - Services: `...` (what must be running, how to start it in a cloud session, and how to restart it after the container has idled)
 - Known failures before any change: None
 
+## Factory lessons
+
+<!-- /factory:retro proposes these from earlier builds, as a PR you merge. Edit them freely; the installer never touches CLAUDE.md. -->
+### Planning
+### Building
+### Review
+
 ## Factory settings
 
 <!-- All optional. Delete any line to use the default. -->
