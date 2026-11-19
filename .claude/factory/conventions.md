@@ -55,6 +55,15 @@ When a person is in the session, every question to them goes through the AskUser
 
 Nobody is in the session in a batch or scheduled run, or when the popup isn't available or goes unanswered. Then the question goes on the issue as a `## Factory decision` comment and the issue moves to `factory:needs-human`. Subagents never ask a human: they return the question, and the orchestrating command asks it.
 
+## Keep it simple
+
+Take the simplest approach that meets the acceptance criteria. Never get there by giving up security or behaviour the issue asks for: a smaller change that leaves a hole or drops a criterion isn't simpler, it's unfinished.
+
+- **Look for the one place first.** Most requests can be met where the code already sends everyone (one gate, one page, one service). Plan and build there before putting the same check in many files.
+- **Count the cost.** An approach costs the files it touches, the existing tests it makes you change, and the new things it adds for the next reader (a concern, a helper, a second way to do something the repo already does). Needing to edit many existing tests is a sign the approach is wider than the request.
+- **Tell the developer before complexity grows.** When a decision would make the work significantly bigger (about twice the files, a size class up, existing tests rewritten, or a new mechanism beside one the repo has), stop and say so before doing it: what the simple version covers, what the bigger one adds, and what each costs. In a plan that is an open question. In a build it is BLOCKED with that question, not a deviation.
+- **Put the cost in the question.** When you offer a human options, give each one's size beside its consequence (files, existing tests that change), so nobody picks the expensive one without seeing its price. Recommend the smaller option unless it costs security or required behaviour, and say which when it does.
+
 ## Hard limits
 
 Never merge a PR, never push to `main`, `master` or the base branch (such as `staging`), never force-push, never delete a branch. A human is the merge gate, and these are the ways an agent could skip it. The GitHub proxy in cloud sessions doesn't restrict which branches a push can update, so the repo's branch ruleset and the guard hook are what protect main. If the hook blocks you, don't look for a way around it; escalate instead.

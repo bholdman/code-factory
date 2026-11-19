@@ -22,3 +22,5 @@ The first word is the mode and the rest are its arguments. Read `.claude/command
 | `retro` | `/factory:retro [--since DATE \| --last N] [--dry-run]` | Finds what recent builds caught late and proposes lessons for CLAUDE.md as a PR |
 
 If there's no mode, or the mode isn't in the table, show the table and stop.
+
+Every mode follows `.claude/factory/conventions.md`, including **Keep it simple**: take the simplest approach that meets the request without giving up security or required behaviour, and tell the developer before a decision significantly increases complexity.
